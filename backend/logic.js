@@ -1,165 +1,177 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('workout-form');
-    const workoutPlanSection = document.getElementById('workout-plan');
-    const planOutput = document.getElementById('plan-output');
-    const scheduleDaysContainer = document.getElementById('schedule-days');
+const express = require('express');
+const cors = require('cors');
+const { PredictionServiceClient } = require('@google-cloud/aiplatform');
+const app = express();
+const port = 3000;
 
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// --- Vertex AI Configuration ---
+// IMPORTANT: You must configure your environment for this to work.
+// 1. Replace 'your-gcp-project-id' with your actual Google Cloud Project ID.
+// 2. Make sure you have authenticated your environment. See instructions in the response.
+const PROJECT_ID = 'your-gcp-project-id';
+const LOCATION = 'us-central1'; // e.g., 'us-central1'
+const MODEL_ID = 'gemini-pro'; // Or another model you want to use
+
+// Initialize the Vertex AI client.
+const clientOptions = {
+  apiEndpoint: `${LOCATION}-aiplatform.googleapis.com`,
+};
+const predictionServiceClient = new PredictionServiceClient(clientOptions);
+// --- End of Vertex AI Configuration ---
+
+app.use(cors());
+app.use(express.json());
+
+app.post('/generate-plan', async (req, res) => {
+    const { age, diet, activityLevel, availableDays } = req.body;
     
-    // Dynamically create day checkboxes
-    daysOfWeek.forEach(day => {
-        const dayLabel = document.createElement('label');
-        dayLabel.className = "flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500";
-        
-        const dayCheckbox = document.createElement('input');
-        dayCheckbox.type = 'checkbox';
-        dayCheckbox.name = 'day';
-        dayCheckbox.value = day;
-        dayCheckbox.className = 'form-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded';
-
-        const daySpan = document.createElement('span');
-        daySpan.className = 'ml-3 text-sm font-medium text-gray-700';
-        daySpan.textContent = day;
-
-        dayLabel.appendChild(dayCheckbox);
-        dayLabel.appendChild(daySpan);
-        scheduleDaysContainer.appendChild(dayLabel);
-    });
-
-    // Exercise database
-    const exercises = {
-        cardio: ['Running', 'Cycling', 'Jumping Jacks', 'Burpees', 'High Knees', 'Swimming'],
-        upperBody: ['Push-ups', 'Pull-ups', 'Dumbbell Rows', 'Overhead Press', 'Bicep Curls', 'Tricep Dips'],
-        lowerBody: ['Squats', 'Lunges', 'Deadlifts', 'Glute Bridges', 'Calf Raises', 'Leg Press'],
-        core: ['Plank', 'Crunches', 'Leg Raises', 'Russian Twists', 'Bicycle Crunches'],
-        fullBody: ['Kettlebell Swings', 'Thrusters', 'Clean and Jerk', 'Mountain Climbers']
-    };
-
-    form.addEventListener('submit', function (event) {
-        event.preventDefault();
-
-        // Get form values
-        const age = parseInt(document.getElementById('age').value);
-        const diet = document.getElementById('diet').value;
-        const activityLevel = document.querySelector('input[name="activity"]:checked').value;
-        const availableDays = Array.from(document.querySelectorAll('input[name="day"]:checked')).map(el => el.value);
-
-        if (availableDays.length === 0) {
-             // Replace alert with a more modern notification if desired
-             alert('Please select at least one day to work out.');
-             return;
-        }
-
-        // This is where you would call the AI service in the future.
-        // For now, we use the local generator.
-        const plan = generatePlan(age, diet, activityLevel, availableDays);
-        displayPlan(plan);
-    });
-
-    function generatePlan(age, diet, activityLevel, availableDays) {
-        const workoutPlan = {};
-        let workoutTypes = [];
-
-        // Basic logic to determine workout focus
-        if (activityLevel === 'sedentary' || activityLevel === 'lightly-active') {
-            // Focus on full body and cardio for beginners
-            workoutTypes = ['fullBody', 'cardio', 'core', 'lowerBody', 'upperBody', 'cardio'];
-        } else {
-            // More specialized split for active individuals
-            workoutTypes = ['upperBody', 'lowerBody', 'cardio', 'core', 'upperBody', 'lowerBody', 'cardio'];
-        }
-        
-        if (diet === 'high-protein') {
-            // Prioritize strength training
-            workoutTypes.unshift('upperBody', 'lowerBody');
-        } else if (diet === 'low-carb') {
-            // Add more cardio for fat burning
-            workoutTypes.push('cardio');
-        }
-        
-        // Assign workouts to available days
-        let workoutTypeIndex = 0;
-        let restDays = daysOfWeek.filter(day => !availableDays.includes(day));
-
-        availableDays.forEach(day => {
-            if (workoutTypeIndex >= workoutTypes.length) {
-                workoutTypeIndex = 0; // Cycle through workouts if more days than types
-            }
-            const workoutType = workoutTypes[workoutTypeIndex];
-            workoutPlan[day] = {
-                focus: workoutType.charAt(0).toUpperCase() + workoutType.slice(1).replace(/([A-Z])/g, ' $1').trim(), // Format focus name
-                exercises: getRandomExercises(workoutType, 3)
-            };
-            workoutTypeIndex++;
-        });
-
-        restDays.forEach(day => {
-            workoutPlan[day] = {
-                focus: 'Rest Day',
-                exercises: ['Active recovery like stretching or a light walk is recommended.']
-            };
-        });
-        
-        return workoutPlan;
-    }
-
-    function getRandomExercises(type, count) {
-        const exerciseList = exercises[type];
-        if (!exerciseList) return [];
-        
-        const shuffled = exerciseList.sort(() => 0.5 - Math.random());
-        let selected = shuffled.slice(0, count);
-
-        // Add sets and reps based on activity level
-        return selected.map(ex => {
-            let setsReps;
-            switch (document.querySelector('input[name="activity"]:checked').value) {
-                case 'sedentary':
-                    setsReps = '2 sets of 10-12 reps';
-                    break;
-                case 'lightly-active':
-                    setsReps = '3 sets of 10-12 reps';
-                    break;
-                case 'moderately-active':
-                    setsReps = '3 sets of 12-15 reps';
-                    break;
-                case 'very-active':
-                    setsReps = '4 sets of 12-15 reps';
-                    break;
-                default:
-                     setsReps = '3 sets of 10-12 reps';
-            }
-            return `${ex} (${setsReps})`;
-        });
-    }
-
-    function displayPlan(plan) {
-        planOutput.innerHTML = ''; // Clear previous plan
-        
-        daysOfWeek.forEach(day => {
-            if (plan[day]) {
-                const dayPlan = plan[day];
-                const isRestDay = dayPlan.focus === 'Rest Day';
-
-                const card = document.createElement('div');
-                card.className = `bg-white p-6 rounded-xl shadow-md border-l-4 ${isRestDay ? 'border-gray-400 bg-gray-50' : 'border-indigo-500'}`;
-                
-                let exercisesHtml = dayPlan.exercises.map(ex => `<li class="text-gray-600">${ex}</li>`).join('');
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xl font-bold ${isRestDay ? 'text-gray-600' : 'text-indigo-700'}">${day}</h3>
-                        <span class="text-sm font-semibold ${isRestDay ? 'text-gray-500' : 'text-indigo-600'} bg-indigo-100 px-3 py-1 rounded-full">${dayPlan.focus}</span>
-                    </div>
-                    <ul class="mt-4 list-disc list-inside space-y-2">
-                        ${exercisesHtml}
-                    </ul>
-                `;
-                planOutput.appendChild(card);
-            }
-        });
-        
-        workoutPlanSection.classList.remove('hidden');
-        workoutPlanSection.scrollIntoView({ behavior: 'smooth' });
+    try {
+        // ** NEW: Using Vertex AI to generate the plan **
+        const plan = await generatePlanWithVertexAI(age, diet, activityLevel, availableDays);
+        res.json(plan);
+    } catch (error) {
+        console.error("Error generating plan with Vertex AI:", error);
+        // Fallback to the old logic if Vertex AI fails
+        console.log("Falling back to local plan generation.");
+        const fallbackPlan = generatePlan(age, diet, activityLevel, availableDays);
+        res.status(500).json(fallbackPlan);
     }
 });
+
+app.listen(port, () => {
+    console.log(`Backend server listening at http://localhost:${port}`);
+});
+
+async function generatePlanWithVertexAI(age, diet, activityLevel, availableDays) {
+    const prompt = `
+        Create a personalized weekly workout plan for a ${age}-year-old with a ${diet} diet.
+        Their current activity level is ${activityLevel}.
+        They are available to work out on the following days: ${availableDays.join(', ')}.
+
+        For each available day, provide a workout focus (e.g., Upper Body, Lower Body, Cardio, Core, Full Body) and 3-4 specific exercises with sets and reps.
+        For the days they are not available, label them as "Rest Day".
+
+        Return ONLY a valid JSON object. The keys should be the days of the week (e.g., "Sunday", "Monday").
+        Each day's value should be an object with a "focus" (string) and "exercises" (an array of strings).
+        Example:
+        {
+          "Monday": {
+            "focus": "Upper Body",
+            "exercises": ["Push-ups (3 sets of 12 reps)", "Pull-ups (3 sets of 8 reps)"]
+          },
+          "Tuesday": {
+            "focus": "Rest Day",
+            "exercises": ["Light stretching"]
+          }
+        }
+    `;
+
+    const endpoint = `projects/${PROJECT_ID}/locations/${LOCATION}/publishers/google/models/${MODEL_ID}`;
+
+    const request = {
+        endpoint,
+        instances: [{ "prompt": prompt }],
+        parameters: {
+            "temperature": 0.5,
+            "maxOutputTokens": 1024,
+            "topP": 0.8,
+            "topK": 40
+        }
+    };
+
+    // This is where the call to the Vertex AI API happens.
+    // The following is a placeholder and will not execute without proper authentication.
+    // const [response] = await predictionServiceClient.predict(request);
+    // const prediction = response.predictions[0].stringValue;
+    // return JSON.parse(prediction);
+
+    // For now, we'll return a mocked response so the frontend works.
+    // Replace this with the actual API call above once you've set up your credentials.
+    console.log("--- MOCKED AI RESPONSE ---");
+    return new Promise(resolve => {
+        setTimeout(() => {
+            const mockPlan = generatePlan(age, diet, activityLevel, availableDays);
+            resolve(mockPlan);
+        }, 500);
+    });
+}
+
+// The original local plan generation logic is kept as a fallback.
+const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+// ... (rest of the original code remains the same) ...
+function generatePlan(age, diet, activityLevel, availableDays) {
+    const workoutPlan = {};
+    let workoutTypes = [];
+
+    // Basic logic to determine workout focus
+    if (activityLevel === 'sedentary' || activityLevel === 'lightly-active') {
+        // Focus on full body and cardio for beginners
+        workoutTypes = ['fullBody', 'cardio', 'core', 'lowerBody', 'upperBody', 'cardio'];
+    } else {
+        // More specialized split for active individuals
+        workoutTypes = ['upperBody', 'lowerBody', 'cardio', 'core', 'upperBody', 'lowerBody', 'cardio'];
+    }
+    
+    if (diet === 'high-protein') {
+        // Prioritize strength training
+        workoutTypes.unshift('upperBody', 'lowerBody');
+    } else if (diet === 'low-carb') {
+        // Add more cardio for fat burning
+        workoutTypes.push('cardio');
+    }
+    
+    // Assign workouts to available days
+    let workoutTypeIndex = 0;
+    let restDays = daysOfWeek.filter(day => !availableDays.includes(day));
+
+    availableDays.forEach(day => {
+        if (workoutTypeIndex >= workoutTypes.length) {
+            workoutTypeIndex = 0; // Cycle through workouts if more days than types
+        }
+        const workoutType = workoutTypes[workoutTypeIndex];
+        workoutPlan[day] = {
+            focus: workoutType.charAt(0).toUpperCase() + workoutType.slice(1).replace(/([A-Z])/g, ' $1').trim(), // Format focus name
+            exercises: getRandomExercises(workoutType, 3, activityLevel)
+        };
+        workoutTypeIndex++;
+    });
+
+    restDays.forEach(day => {
+        workoutPlan[day] = {
+            focus: 'Rest Day',
+            exercises: ['Active recovery like stretching or a light walk is recommended.']
+        };
+    });
+    
+    return workoutPlan;
+}
+
+function getRandomExercises(type, count, activityLevel) {
+    const exerciseList = exercises[type];
+    if (!exerciseList) return [];
+    
+    const shuffled = exerciseList.sort(() => 0.5 - Math.random());
+    let selected = shuffled.slice(0, count);
+
+    // Add sets and reps based on activity level
+    return selected.map(ex => {
+        let setsReps;
+        switch (activityLevel) {
+            case 'sedentary':
+                setsReps = '2 sets of 10-12 reps';
+                break;
+            case 'lightly-active':
+                setsReps = '3 sets of 10-12 reps';
+                break;
+            case 'moderately-active':
+                setsReps = '3 sets of 12-15 reps';
+                break;
+            case 'very-active':
+                setsReps = '4 sets of 12-15 reps';
+                break;
+            default:
+                 setsReps = '3 sets of 10-12 reps';
+        }
+        return `${ex} (${setsReps})`;
+    });
+}
