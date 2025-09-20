@@ -162,4 +162,40 @@ document.addEventListener('DOMContentLoaded', function () {
         workoutPlanSection.classList.remove('hidden');
         workoutPlanSection.scrollIntoView({ behavior: 'smooth' });
     }
+
+    document.getElementById('workout-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const age = document.getElementById('age').value;
+        const diet = document.getElementById('diet').value;
+        const activityLevel = document.getElementById('activity-level').value;
+        const schedule = document.getElementById('schedule').value;
+
+        const userData = {
+            age,
+            diet,
+            activityLevel,
+            schedule
+        };
+
+        // For now, we'll just log the data to the console.
+        // Later, we will send this to the backend.
+        console.log(userData);
+
+        // Display a sample plan for now
+        const planContent = document.getElementById('plan-content');
+        planContent.innerHTML = `
+            <h3>Sample Workout Plan</h3>
+            <p><strong>Day 1:</strong> Full Body Strength</p>
+            <ul>
+                <li>Squats: 3 sets of 10</li>
+                <li>Push-ups: 3 sets of 15</li>
+                <li>Rows: 3 sets of 12</li>
+            </ul>
+            <p><strong>Day 2:</strong> Cardio</p>
+            <ul>
+                <li>Running: 30 minutes</li>
+            </ul>
+        `;
+    });
 });
