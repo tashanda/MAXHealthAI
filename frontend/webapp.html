@@ -3,97 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personalized Workout Planner</title>
+    <title>MAXHealth AI | Elite Personalized Fitness</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom Stylesheet -->
     <link rel="stylesheet" href="style.css" />
-</head>
+</head> 
 <body class="bg-gray-100 text-gray-800">
-
     <div class="container mx-auto px-4 py-8 md:py-12">
         <header class="text-center mb-8 md:mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">Your Personalized Workout Planner</h1>
-            <p class="text-lg text-gray-600 mt-2">Fill in your details to generate a workout plan tailored just for you.</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">MAXHealth AI</h1>
+            <p class="text-lg text-gray-600 mt-2">Your Elite Personalized Fitness Protocol</p>
         </header>
 
         <main class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-lg">
-            <!-- User Input Form -->
-            <form id="workout-form" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Personal Details Section -->
+            <form id="workout-form" class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                
+                <!-- Step 1: About You -->
                 <div class="md:col-span-2">
-                    <h2 class="text-2xl font-semibold mb-4 border-b pb-2 text-gray-700">Step 1: Tell Us About Yourself</h2>
+                    <h2 class="text-2xl font-semibold mb-4 border-b pb-2 text-gray-700">Step 1: About You</h2>
                 </div>
                 <div>
                     <label for="age" class="block text-sm font-medium text-gray-700 mb-1">Age</label>
-                    <input type="number" id="age" name="age" class="form-input w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 25" required>
+                    <input type="number" id="age" name="age" class="form-input w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 35" required>
                 </div>
-
                 <div>
+                    <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                    <select id="gender" name="gender" class="form-select w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="prefer_not_to_say">Prefer not to say</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
                     <label for="diet" class="block text-sm font-medium text-gray-700 mb-1">Primary Diet</label>
                     <select id="diet" name="diet" class="form-select w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                         <option value="balanced">Balanced</option>
                         <option value="high-protein">High Protein</option>
                         <option value="low-carb">Low Carb</option>
                         <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
                     </select>
                 </div>
-                
+
+                <!-- Step 2: Your Goals & Experience -->
+                <div class="md:col-span-2 mt-6">
+                    <h2 class="text-2xl font-semibold mb-4 border-b pb-2 text-gray-700">Step 2: Your Goals & Experience</h2>
+                </div>
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Activity Level</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Primary Fitness Goal</label>
+                    <div id="fitness-goal" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
-                            <input type="radio" name="activity" value="sedentary" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" checked>
-                            <span class="ml-3 text-sm font-medium text-gray-700">Sedentary</span>
+                            <input type="radio" name="goal" value="cutting" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" checked>
+                            <span class="ml-3 text-sm font-medium text-gray-700">Lose Weight (Cutting)</span>
                         </label>
                         <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
-                            <input type="radio" name="activity" value="lightly-active" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
-                            <span class="ml-3 text-sm font-medium text-gray-700">Lightly Active</span>
+                            <input type="radio" name="goal" value="bulking" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="ml-3 text-sm font-medium text-gray-700">Build Muscle (Bulking)</span>
                         </label>
                         <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
-                            <input type="radio" name="activity" value="moderately-active" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
-                            <span class="ml-3 text-sm font-medium text-gray-700">Moderately Active</span>
+                            <input type="radio" name="goal" value="maintenance" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="ml-3 text-sm font-medium text-gray-700">Maintain Fitness</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Workout Experience</label>
+                    <div id="experience-level" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
+                            <input type="radio" name="experience" value="beginner" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" checked>
+                            <span class="ml-3 text-sm font-medium text-gray-700">Beginner</span>
                         </label>
                         <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
-                            <input type="radio" name="activity" value="very-active" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
-                            <span class="ml-3 text-sm font-medium text-gray-700">Very Active</span>
+                            <input type="radio" name="experience" value="intermediate" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="ml-3 text-sm font-medium text-gray-700">Intermediate</span>
+                        </label>
+                        <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
+                            <input type="radio" name="experience" value="advanced" class="form-radio h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="ml-3 text-sm font-medium text-gray-700">Advanced</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- Schedule Section -->
-                <div class="md:col-span-2">
-                    <h2 class="text-2xl font-semibold mb-4 mt-6 border-b pb-2 text-gray-700">Step 2: Set Your Schedule</h2>
+                <!-- Step 3: Schedule & Preferences -->
+                <div class="md:col-span-2 mt-6">
+                    <h2 class="text-2xl font-semibold mb-4 border-b pb-2 text-gray-700">Step 3: Schedule & Preferences</h2>
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Which days are you available to work out?</label>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Available Workout Days</label>
                     <div id="schedule-days" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
                         <!-- Checkboxes will be dynamically inserted by script.js -->
                     </div>
                 </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Available Equipment</label>
+                    <div id="equipment-list" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
+                            <input type="checkbox" name="equipment" value="bodyweight" class="form-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300" checked>
+                            <span class="ml-3 text-sm font-medium text-gray-700">Bodyweight Only</span>
+                        </label>
+                        <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
+                            <input type="checkbox" name="equipment" value="dumbbells" class="form-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="ml-3 text-sm font-medium text-gray-700">Dumbbells / Bands</span>
+                        </label>
+                        <label class="flex items-center p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-indigo-50 has-[:checked]:bg-indigo-100 has-[:checked]:border-indigo-500">
+                            <input type="checkbox" name="equipment" value="full_gym" class="form-checkbox h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300">
+                            <span class="ml-3 text-sm font-medium text-gray-700">Full Gym Access</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="health-notes" class="block text-sm font-medium text-gray-700 mb-1">Health Notes (Optional)</label>
+                    <textarea id="health-notes" name="health-notes" rows="3" class="form-input w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Previous knee injury, prefer low-impact exercises..."></textarea>
+                </div>
                 
                 <!-- Action Button -->
                 <div class="md:col-span-2 text-center mt-6">
-                    <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white font-bold py-3 px-12 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 transform transition-transform duration-200 hover:scale-105">
-                        Generate Workout Plan
+                    <button type="submit" id="generate-btn" class="w-full md:w-auto bg-indigo-600 text-white font-bold py-3 px-12 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-opacity-50 transform transition-transform duration-200 hover:scale-105 flex items-center justify-center disabled:bg-indigo-400 disabled:cursor-not-allowed">
+                        <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span id="button-text">Generate My Protocol</span>
                     </button>
                 </div>
             </form>
         </main>
-        
+
         <!-- Workout Plan Display Area -->
         <section id="workout-plan" class="hidden mt-12 max-w-4xl mx-auto">
-             <h2 class="text-3xl font-bold text-center mb-8 text-gray-900">Your Custom Workout Plan</h2>
+             <h2 class="text-3xl font-bold text-center mb-8 text-gray-900">Your Custom Fitness Protocol</h2>
+             
+             <!-- NEW: Diet Recommendations Area -->
+             <div id="diet-recommendations" class="mb-10">
+                <!-- Diet recommendations will be displayed here by script.js -->
+             </div>
+
              <div id="plan-output" class="space-y-6">
-                <!-- Generated plan will be displayed here by script.js -->
-            </div>
+                <!-- Generated workout plan will be displayed here by script.js -->
+             </div>
         </section>
-
     </div>
-
-    <!-- Custom JavaScript -->
+     
     <script src="script.js"></script>
 </body>
 </html>

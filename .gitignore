@@ -1,0 +1,14 @@
+# Node dependencies
+node_modules
+
+# Secret files and environment variables
+.env
+service-account-key.json
+backend/.env
+backend/service-account-key.json
+
+# process env
+backend/process.env
+
+# Log files
+npm-debug.log
